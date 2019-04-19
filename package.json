@@ -1,11 +1,6 @@
 {
-  "name": "particle-swarm-optimization",
-  "version": "0.0.1-alpha",
+  "author": "Norbert Logiewa <norbertlogiewa96@gmail.com>",
   "description": "Particle Swarm Optimization algorithm",
-  "main": "index.js",
-  "scripts": {
-    "test": "jest"
-  },
   "keywords": [
     "PSO",
     "pso",
@@ -14,6 +9,12 @@
     "algorithm",
     "search-algorithm"
   ],
-  "author": "Norbert Logiewa <norbertlogiewa96@gmail.com>",
-  "license": "MIT"
+  "license": "MIT",
+  "main": "index.js",
+  "name": "particle-swarm-optimization",
+  "private": true,
+  "scripts": {
+    "test": "jest"
+  },
+  "version": "0.0.1-alpha"
 }

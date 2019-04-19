@@ -3,7 +3,7 @@ const PSO = require('..');
 
 const expr = (x1, x2, x3) => (x1 + x2 ** x1) / x3;
 const f = (xs) => {
-  const val = -Math.abs(expr(...xs));
+  const val = -(expr(...xs)**2);
   if (Object.is(val, Infinity) || Object.is(val, NaN)) {
     return -Infinity;
   } else {

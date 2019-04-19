@@ -6,7 +6,7 @@ const DEFAULTS = {
   inertia: null,
   maxPos: 1E9,
   maxVel: 1E9,
-  minImp: 1E-7,
+  minImp: 1E-6,
   minPos: -1E9,
   minVel: -1E9,
   nNeighs: 0.5,
@@ -55,7 +55,7 @@ class PSO extends EventEmitter {
     let rIdx = 0;
     const startTm = Date.now();
 
-    this.emit('start', new Date(startTm), {
+    this.emit('start', startTm, {
       inertia: this.inertia,
       maxVel: this.maxVel,
       nDims: this.nDims,
@@ -164,7 +164,7 @@ class PSO extends EventEmitter {
       }
     }
 
-    this.emit('end', rIdx, timeTaken, new Date());
+    this.emit('end', rIdx, new Date(), timeTaken);
 
     for (let pIdx = 0; pIdx < this.nParts; pIdx++) {
       yield pop.subarray(pIdx * offset + this.nDims, pIdx * offset + this.nDims + this.nDims);
