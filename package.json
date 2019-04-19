@@ -1,0 +1,19 @@
+{
+  "name": "particle-swarm-optimization",
+  "version": "0.0.1-alpha",
+  "description": "Particle Swarm Optimization algorithm",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [
+    "PSO",
+    "pso",
+    "particle-swarm-optimization",
+    "global-search",
+    "algorithm",
+    "search-algorithm"
+  ],
+  "author": "Norbert Logiewa <norbertlogiewa96@gmail.com>",
+  "license": "MIT"
+}
