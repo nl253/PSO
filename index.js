@@ -4,23 +4,22 @@ const SEC = 1000;
 
 const DEFAULTS = {
   inertia: 1,
-  minImp: 1E-7,
-  maxVel: 1E9,
-  minVel: -1E9,
   maxPos: 1E9,
+  maxVel: 1E9,
+  minImp: 1E-7,
   minPos: -1E9,
-  timeOutMS: 120 * SEC,
+  minVel: -1E9,
   nNeighs: 0.5,
-  nTrack: 200,
   nParts: 30,
   nRounds: 1E6,
+  nTrack: 200,
+  timeOutMS: 30 * SEC,
 };
 
 class PSO extends EventEmitter {
-
   /**
    * @param {function(Float64Array): !Number} f
-   * @param {!Number} nDim
+   * @param {!number} nDim
    * @param {!Object} [opts]
    */
   constructor(f, nDims, opts = {}) {
@@ -54,13 +53,13 @@ class PSO extends EventEmitter {
     const cacheBest = new Map();
 
     let rIdx = 0;
-    const startTm = Date.now(); 
+    const startTm = Date.now();
 
     this.emit('start', new Date(startTm), {
-      nParts: this.nParts,
-      nDims: this.nDims,
-      maxVel: this.maxVel,
       inertia: this.inertia,
+      maxVel: this.maxVel,
+      nDims: this.nDims,
+      nParts: this.nParts,
       nRounds: this.nRounds,
       timeOutMS: this.timeOutMS,
     });
@@ -94,8 +93,8 @@ class PSO extends EventEmitter {
           cachePos.set(pIdx, fp);
         }
 
-        let fb = cacheBest.get(pIdx)
-        
+        let fb = cacheBest.get(pIdx);
+
         if (fb === undefined) {
           fb = this.f(pop.subarray(offsetBest, offsetVel));
           cacheBest.set(pIdx, fb);
@@ -130,7 +129,6 @@ class PSO extends EventEmitter {
         }
 
         for (let nIdx = 1; nIdx < this.nNeighs; nIdx++) {
-
           let fitness = cachePos.get(nIdx);
 
           if (fitness === undefined) {
@@ -146,14 +144,18 @@ class PSO extends EventEmitter {
         this.emit('best', bestFitness);
         scores.set(scores.subarray(1));
         scores[scores.length - 1] = bestFitness;
+        const weight = this.inertia === null ? (1 - (timeTaken / this.timeOutMS)) : this.inertia;
+        const offsetPosFittestNeigh = fittestNeighIdx * offset;
         for (let dim = 0; dim < this.nDims; dim++) {
+          const particlePos = pop[offsetPos + dim];
           // decrease inertia linearly with time
-          pop[offsetVel + dim] = 
-            Math.max(
-              this.minVel, 
-              Math.min(
-                this.maxVel, 
-                ((this.inertia === null ? (1 - (timeTaken / this.timeOutMS)) : this.inertia) * pop[pIdx * offset + this.nDims + this.nDims + dim]) + (Math.random() * (pop[pIdx * offset + this.nDims + dim] - pop[pIdx * offset + dim])) + (Math.random() * (pop[fittestNeighIdx * offset + dim] - pop[pIdx * offset + dim]))));
+          pop[offsetVel + dim] = Math.max(
+            this.minVel,
+            Math.min(
+              this.maxVel,
+              weight * pop[offsetVel + dim] + Math.random() * (pop[offsetBest + dim] - particlePos) + Math.random() * (pop[offsetPosFittestNeigh + dim] - particlePos),
+            ),
+          );
         }
         cachePos.delete(pIdx);
         for (let dim = 0; dim < this.nDims; dim++) {

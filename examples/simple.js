@@ -5,15 +5,15 @@ const PSO = require('..');
 const f = xs => xs.reduce((x1, x2) => x1 + x2, 0);
 
 const SEC = 1000;
-const MIN = SEC * 60;
 const nDims = 1500;
 const opts = {
+  maxPos: 1E10,
   minImp: 0.01,
-  maxPos: 1E9,
-  nParts: 30,
-  timeOutMS: 20 * SEC,
-  nTrack: 25,
-  nNeigh: 0.1,
+  minPos: -1E10,
+  nNeigh: 0.15,
+  nParts: 50,
+  nTrack: 50,
+  timeOutMS: 30 * SEC,
 };
 
 const pso = new PSO(f, nDims, opts);
