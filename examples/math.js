@@ -1,16 +1,15 @@
 #!/usr/bin/env node
-
 const PSO = require('..');
 
-const expr = (x1, x2, x3) => (x1 + x2**x1) / x3;
-const f = xs => {
-  const val  = -Math.abs(expr(...xs));
+const expr = (x1, x2, x3) => (x1 + x2 ** x1) / x3;
+const f = (xs) => {
+  const val = -Math.abs(expr(...xs));
   if (Object.is(val, Infinity) || Object.is(val, NaN)) {
     return -Infinity;
   } else {
     return val;
   }
-}
+};
 
 const opts = { nNeighs: 0.5 };
 
@@ -26,8 +25,8 @@ pso.on('end', (rIdx, ms) => console.log(`[DONE] rounds ${rIdx}, took ${ms / 1000
 
 const solutions = Array
   .from(pso.search())
-  .map(p => ({p, score: f(p)}))
-  .sort((o1, o2) => o1.score > o2.score ? 1 : -1)
+  .map(p => ({ p, score: f(p) }))
+  .sort((o1, o2) => (o1.score > o2.score ? 1 : -1))
   .map(({ p }) => p);
 
 for (const p of solutions) {

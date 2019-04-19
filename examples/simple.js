@@ -2,9 +2,9 @@
 
 const PSO = require('..');
 
-const f = xs => xs.reduce((x1, x2) => x1 + x2, 0);
-
 const SEC = 1000;
+
+const f = xs => xs.reduce((x1, x2) => x1 + x2, 0);
 const nDims = 1500;
 const opts = {
   maxPos: 1E10,
@@ -26,4 +26,4 @@ pso.on('end', (rIdx, ms) => console.log(`[DONE] rounds ${rIdx}, took ${ms / SEC}
 pso.on('best', fitness => console.log(fitness, fitness / (opts.maxPos * nDims)));
 pso.on('round', rIdx => console.log(`round #${rIdx}`));
 
-Array.from(pso.search())
+Array.from(pso.search());
