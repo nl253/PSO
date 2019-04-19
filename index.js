@@ -3,7 +3,7 @@ const { EventEmitter } = require('events');
 const SEC = 1000;
 
 const DEFAULTS = {
-  inertia: 1,
+  inertia: null,
   maxPos: 1E9,
   maxVel: 1E9,
   minImp: 1E-7,
