@@ -145,8 +145,8 @@ which can be used for profiling.
 2. `"generate"` when generating initial swarm.
 3. `"randomize"` when setting random values for dimensions in the initial swarm.
 4. `"start"` after `.search()` and all initialisation is complete, before the 1st round
-  - **Int** `startTime` in milliseconds
-  - **Object** `opts` the algorithm is run with (you can use it to see if you configured it properly)
+    - **Int** `startTime` in milliseconds
+    - **Object** `opts` the algorithm is run with (you can use it to see if you configured it properly)
 
 **Emitted on Stop Condition Met** <br>
 
@@ -154,18 +154,18 @@ which can be used for profiling.
 2. `"timeout"` when `timeOutMS` limit is reached.
 3. `"stuck"` when stuck in a local minimum.
 4. `"end"` when finished.
-  - **Int** `roundNumber`
-  - **Date** `dateFinished`
-  - **Int** `msTaken`
+     - **Int** `roundNumber`
+     - **Date** `dateFinished`
+     - **Int** `msTaken`
 
 **Emitted Every Round** <br>
 
 1. `"round"` on every round start (**not** the same as `"rounds"`).
 2. `"best"` after all particles have been evaluated and the best candidate is selected.
-  - **Float** `scoreOfBestParticle`
-  - **Float** `improvementSinceLastRound`
+     - **Float** `scoreOfBestParticle`
+     - **Float** `improvementSinceLastRound`
 3. `"inertia"` after inertia has been computed (this makes sense when `inertia = null` which makes it adaptive, you can use it to see how it grows with time)
-  - **Float** `inertia`
+     - **Float** `inertia`
 
 Example of extracting data from signals:
 
