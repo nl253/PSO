@@ -1,10 +1,28 @@
 {
   "author": "Norbert Logiewa <norbertlogiewa96@gmail.com>",
   "description": "Particle Swarm Optimization algorithm",
+  "repository": {
+    "url": "https://github.com/nl253/PSO-JS",
+    "type": "git"
+  },
+  "bugs": {
+    "url": "https://github.com/nl253/PSO-JS/issues",
+    "email": "norbertlogiewa96@gmail.com"
+  },
+  "files": [
+    "examples/meta.js",
+    "examples/math.js",
+    "examples/simple.js",
+    "examples/parallel.js"
+  ],
+  "directories": {
+    "example": "examples"
+  },
   "keywords": [
     "PSO",
     "pso",
     "particle-swarm-optimization",
+    "particle-swarm-optimisation",
     "global-search",
     "algorithm",
     "search-algorithm"
@@ -12,7 +30,7 @@
   "license": "MIT",
   "main": "index.js",
   "name": "particle-swarm-optimization",
-  "private": true,
+  "private": false,
   "scripts": {
     "test": "jest"
   },

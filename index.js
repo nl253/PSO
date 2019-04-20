@@ -7,12 +7,12 @@ const DEFAULTS = {
   maxPos: 1E9,
   maxVel: 1E9,
   minImp: 1E-6,
-  minPos: -1E9,
+  minPos: 0,
   minVel: -1E9,
   nNeighs: 0.5,
   nParts: 30,
   nRounds: 1E6,
-  nTrack: 200,
+  nTrack: 50,
   timeOutMS: 30 * SEC,
 };
 
@@ -29,7 +29,7 @@ class PSO extends EventEmitter {
       f,
     }, DEFAULTS), opts));
     if (this.nNeighs < 1) {
-      this.nNeighs = this.nParts * this.nNeighs;
+      this.nNeighs = Math.floor(this.nParts * this.nNeighs);
     }
   }
 
@@ -42,7 +42,7 @@ class PSO extends EventEmitter {
     // indexes of all particles sorted on every iteration
     const indexes = new Uint16Array(new ArrayBuffer(2 * this.nParts)).map((_, idx) => idx);
 
-    // indexes of all particles computed on every iteration 
+    // indexes of all particles computed on every iteration
     const distances = new Float64Array(new ArrayBuffer(8 * this.nParts));
 
     // scores of candidates from last nTrack rounds
@@ -67,13 +67,23 @@ class PSO extends EventEmitter {
 
     this.emit('start', startTm, {
       inertia: this.inertia,
-      nNeighs: this.nNeighs,
+      maxPos: this.maxPos,
       maxVel: this.maxVel,
+      minImp: this.minImp,
+      minPos: this.minPos,
+      minVel: this.minVel,
       nDims: this.nDims,
+      nNeighs: this.nNeighs,
       nParts: this.nParts,
       nRounds: this.nRounds,
       timeOutMS: this.timeOutMS,
     });
+
+    // history of highest fitness values
+    // used to detect if the algorithm is stuck
+    const histMax = new Float64Array(new ArrayBuffer(8 * this.nTrack));
+    // this is a hack (ensures that enough history entries are present)
+    histMax[histMax.length - 1] = Infinity;
 
     let timeTaken;
 
@@ -87,13 +97,16 @@ class PSO extends EventEmitter {
       } else if (timeTaken >= this.timeOutMS) {
         this.emit('timeout', timeTaken);
         break;
-      } else if (rIdx > this.nTrack && scores.subarray(1).map((s, idx) => s - scores[idx]).reduce((f1, f2) => f1 + f2, 0) < this.minImp) {
-        this.emit('stuck');
-        break;
       } else {
-        this.emit('round', rIdx);
-        rIdx++;
+        histMax.set(histMax.subarray(1));
+        histMax[histMax.length - 1] = scores.reduce((s1, s2) => Math.max(s1, s2));
+        if (!histMax.some(max => max !== histMax[0])) {
+          this.emit('stuck');
+          break;
+        }
       }
+      this.emit('round', rIdx);
+      rIdx++;
 
       // decrease inertia linearly with time
       const weight = this.inertia === null ? (1 - (timeTaken / this.timeOutMS)) : this.inertia;
@@ -107,12 +120,10 @@ class PSO extends EventEmitter {
 
         if (scoreParticle === undefined) {
           scoreParticle = this.f(swarm.subarray(offsetPos, offsetBest));
-          // protect against fitness function returnin NaN or Infinity
+          // protect against fitness function returning NaN or Infinity
           if (Object.is(NaN, scoreParticle)) {
             console.warn('[WARN] fitness function returned NaN');
-            scoreParticle = -Number.MAX_VALUE;
-          } else {
-            scoreParticle = Math.min(Number.MAX_VALUE, scoreParticle);
+            scoreParticle = -Infinity;
           }
           cachePos.set(pIdx, scoreParticle);
         }
@@ -148,8 +159,7 @@ class PSO extends EventEmitter {
         let bestScore = cachePos.get(bestNeighIdx);
 
         if (bestScore === undefined) {
-          const neigh = swarm.subarray(bestNeighIdx * offset, bestNeighIdx * offset + this.nDims);
-          bestScore = this.f(neigh);
+          bestScore = this.f(swarm.subarray(bestNeighIdx * offset, bestNeighIdx * offset + this.nDims));
           cachePos.set(bestNeighIdx, bestScore);
         }
 
@@ -167,9 +177,9 @@ class PSO extends EventEmitter {
             bestNeighIdx = nIdx;
           }
         }
-        this.emit('best', 
-          bestNeighIdx, 
-          bestScore, 
+        this.emit('best',
+          bestNeighIdx,
+          bestScore,
           bestScore - scores[scores.length - 1], // improvement
         );
 
