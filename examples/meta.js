@@ -17,7 +17,7 @@ function decodeSolution(particle) {
   const maxVel = 5 + minVel + Math.abs(particle[4]);
   const nNeighs = Math.min(1, 0.1 + Math.abs(particle[0] - Math.trunc(particle[0])));
   const nParts = 20 + Math.floor(Math.abs(particle[1])) % 200;
-  const nTrack = 10 + (Math.trunc(Math.abs(particle[5])) % 300);
+  const nTrack = 10 + (Math.floor(Math.abs(particle[5])) % 300);
   return {
     inertia,
     maxVel,
@@ -48,15 +48,20 @@ function paramSetterScoreFunct(particle) {
   const bestParticle = maximizer.search().next().value;
   const msTook = Date.now() - startTm;
   const scoreSearch = scoreFunct(bestParticle);
-  const scoreTime = (1 - (msTook / (12 * SEC))) / 2;
+  const scoreTime = (1 - (msTook / opts.timeOutMS)) / 3;
   const totalScore = scoreSearch + scoreTime;
-  console.log('sub-algorithm score', totalScore);
+  console.log('sub-algorithm [SCORE] total', totalScore, 'search', scoreSearch, 'time', scoreTime);
   return totalScore;
 }
 
-const paramSetterOpts = { minPos: 0, maxPos: 1000, nNeighs: 5, nParts: 25, timeOutMS: 30 * MIN };
+const paramSetterOpts = {
+  minPos: 0,
+  maxPos: 1E8,
+  nNeighs: 5,
+  nParts: 25,
+  timeOutMS: 30 * MIN,
+};
 const paramSetterNDims = 6;
-
 const paramSetter = new PSO(paramSetterScoreFunct, paramSetterNDims, paramSetterOpts);
 
 // use the EventEmitter API for getting profiling
