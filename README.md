@@ -171,10 +171,10 @@ Example of extracting data from signals:
 
 ```js
 pso.on('start', time => console.log(`[START] at ${new Date(time).toTimeString()}`));
-pso.on('best', (_bestCand, score, _) => console.log(score));
+pso.on('best', score => console.log(score));
 pso.on('stuck', () => console.log(`[END] stuck`));
 pso.on('timeout', () => console.log(`[END] timeout`));
-pso.on('end', (rIdx, _date, ms) => console.log(`[END] after round #${rIdx} (took ${ms / SEC}sec)`));
+pso.on('end', (rIdx, ms) => console.log(`[END] after round #${rIdx} (took ${ms / SEC}sec)`));
 ```
 
 To see more examples see [examples](https://github.com/nl253/PSO-JS/tree/master/examples).

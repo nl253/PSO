@@ -13,7 +13,7 @@ pso.on('stuck', () => console.log('[END] stuck'));
 pso.on('timeout', () => console.log('[END] timeout'));
 pso.on('inertia', w => console.log('inertia', w.toFixed(4)));
 pso.on('end', (rIdx, ms) => console.log(`[DONE] rounds ${rIdx}, took ${ms / SEC}sec`));
-pso.on('best', (_bestPartIdx, score) => console.log('score', (score / (pso.maxPos * nDims)).toFixed(4), '/ 1.0'));
+pso.on('best', (_, score) => console.log('score', (score / (pso.maxPos * nDims)).toFixed(4), '/ 1.0'));
 pso.on('round', rIdx => console.log(`round #${rIdx}`));
 
 Array.from(pso.search());

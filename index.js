@@ -178,9 +178,9 @@ class PSO extends EventEmitter {
           }
         }
         this.emit('best',
-          bestNeighIdx,
           bestScore,
           bestScore - scores[scores.length - 1], // improvement
+          bestNeighIdx,
         );
 
         // shift scores
@@ -205,7 +205,7 @@ class PSO extends EventEmitter {
       }
     }
 
-    this.emit('end', rIdx, new Date(), timeTaken);
+    this.emit('end', rIdx, timeTaken, new Date());
 
     for (let pIdx = 0; pIdx < this.nParts; pIdx++) {
       // yield best known
