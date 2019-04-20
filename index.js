@@ -48,7 +48,7 @@ class PSO extends EventEmitter {
     // scores of candidates from last nTrack rounds
     const scores = new Float64Array(new ArrayBuffer(8 * this.nTrack));
 
-    // in this algorithm score cache is extremly useful, you are requesting the score of the same particles over and over again
+    // in this algorithm score cache is extremely useful, you are requesting the score of the same particles over and over again
     const cachePos = new Map();
     const cacheBest = new Map();
 

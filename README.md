@@ -82,7 +82,7 @@ const opts = {
   nParts: 300,        
 
   // 0.2 is 20%, 10 is 10
-  // this is how many neighbors a partcle will consider (every particle is attracted to the best neighbor)
+  // this is how many neighbors a particle will consider (every particle is attracted to the best neighbor)
   // (if you find that the algorithm gets stuck too quickly, decrease it)
   nNeighs: 0.1,         
 
