@@ -19,7 +19,7 @@ const DEFAULTS = {
 class PSO extends EventEmitter {
   /**
    * @param {function(Float64Array): !Number} f
-   * @param {!number} nDim
+   * @param {!number} nDims
    * @param {!Object} [opts]
    */
   constructor(f, nDims, opts = {}) {
@@ -34,25 +34,35 @@ class PSO extends EventEmitter {
   }
 
   * search() {
+    this.emit('init');
+
+    let rIdx = 0;
     const offset = this.nDims * 3;
 
-    const pop = new Float64Array(new ArrayBuffer(8 * 3 * this.nParts * this.nDims));
-
-    for (let i = 0; i < pop.length; i++) {
-      pop[i] = Math.random() * 1000;
-    }
-
-    const scores = new Float64Array(new ArrayBuffer(8 * this.nTrack));
-
-    this.emit('randomize');
-
+    // indexes of all particles sorted on every iteration
     const indexes = new Uint16Array(new ArrayBuffer(2 * this.nParts)).map((_, idx) => idx);
+
+    // indexes of all particles computed on every iteration 
     const distances = new Float64Array(new ArrayBuffer(8 * this.nParts));
 
+    // scores of candidates from last nTrack rounds
+    const scores = new Float64Array(new ArrayBuffer(8 * this.nTrack));
+
+    // in this algorithm score cache is extremly useful, you are requesting the score of the same particles over and over again
     const cachePos = new Map();
     const cacheBest = new Map();
 
-    let rIdx = 0;
+    this.emit('generate');
+
+    const swarm = new Float64Array(new ArrayBuffer(8 * 3 * this.nParts * this.nDims));
+
+    this.emit('randomize');
+
+    // initialise swarm to rand values
+    for (let i = 0; i < swarm.length; i++) {
+      swarm[i] = Math.random() * (Math.random() < 0.5 ? this.maxPos : this.minPos);
+    }
+
     const startTm = Date.now();
 
     this.emit('start', startTm, {
@@ -68,6 +78,8 @@ class PSO extends EventEmitter {
 
     while (true) {
       timeTaken = Date.now() - startTm;
+
+      // stop conditions
       if (rIdx >= this.nRounds) {
         this.emit('rounds');
         break;
@@ -82,28 +94,39 @@ class PSO extends EventEmitter {
         rIdx++;
       }
 
+      // decrease inertia linearly with time
+      const weight = this.inertia === null ? (1 - (timeTaken / this.timeOutMS)) : this.inertia;
+      this.emit('inertia', weight);
+
       for (let pIdx = 0; pIdx < this.nParts; pIdx++) {
-        let fp = cachePos.get(pIdx);
+        let scoreParticle = cachePos.get(pIdx);
         const offsetPos = pIdx * offset;
         const offsetBest = offsetPos + this.nDims;
         const offsetVel = offsetBest + this.nDims;
 
-        if (fp === undefined) {
-          fp = this.f(pop.subarray(offsetPos, offsetBest));
-          cachePos.set(pIdx, fp);
+        if (scoreParticle === undefined) {
+          scoreParticle = this.f(swarm.subarray(offsetPos, offsetBest));
+          // protect against fitness function returnin NaN or Infinity
+          if (Object.is(NaN, scoreParticle)) {
+            console.warn('[WARN] fitness function returned NaN');
+            scoreParticle = -Number.MAX_VALUE;
+          } else {
+            scoreParticle = Math.min(Number.MAX_VALUE, scoreParticle);
+          }
+          cachePos.set(pIdx, scoreParticle);
         }
 
-        let fb = cacheBest.get(pIdx);
+        let scoreBestKnown = cacheBest.get(pIdx);
 
-        if (fb === undefined) {
-          fb = this.f(pop.subarray(offsetBest, offsetVel));
-          cacheBest.set(pIdx, fb);
+        if (scoreBestKnown === undefined) {
+          scoreBestKnown = this.f(swarm.subarray(offsetBest, offsetVel));
+          cacheBest.set(pIdx, scoreBestKnown);
         }
 
-        if (fp > fb) {
-          cacheBest.set(pIdx, fp);
+        if (scoreParticle > scoreBestKnown) {
+          cacheBest.set(pIdx, scoreParticle);
           for (let j = 0; j < this.nDims; j++) {
-            pop[offsetBest + j] = pop[offsetPos + j];
+            swarm[offsetBest + j] = swarm[offsetPos + j];
           }
         }
 
@@ -112,54 +135,61 @@ class PSO extends EventEmitter {
           distances[nIdx] = 0;
           const offsetPosN = nIdx * offset;
           for (let j = 0; j < this.nDims; j++) {
-            distances[nIdx] += Math.abs(pop[offsetPos + j] - pop[offsetPosN + j]);
+            distances[nIdx] += Math.abs(swarm[offsetPos + j] - swarm[offsetPosN + j]);
           }
         }
 
         // the 0th item will be self which has a distance of 0 (not useful)
         const neighbourIdxs = indexes.sort((a, b) => (distances[a] > distances[b] ? 1 : -1)).subarray(1, this.nNeighs + 1);
 
-        // assume the first neighbour is the fittest
-        let fittestNeighIdx = 0;
-        let bestFitness = cachePos.get(0);
+        // assume the first neighbour is the best
+        let bestNeighIdx = neighbourIdxs[0];
+        let bestScore = cachePos.get(bestNeighIdx);
 
-        if (bestFitness === undefined) {
-          bestFitness = this.f(pop.subarray(0, this.nDims));
-          cachePos.set(0, bestFitness);
+        if (bestScore === undefined) {
+          const neigh = swarm.subarray(bestNeighIdx * offset, bestNeighIdx * offset + this.nDims);
+          bestScore = this.f(neigh);
+          cachePos.set(bestNeighIdx, bestScore);
         }
 
-        for (let nIdx = 1; nIdx < this.nNeighs; nIdx++) {
-          let fitness = cachePos.get(nIdx);
+        for (let i = 1; i < neighbourIdxs.length; i++) {
+          const nIdx = neighbourIdxs[i];
+          let score = cachePos.get(nIdx);
 
-          if (fitness === undefined) {
-            fitness = this.f(pop.subarray(nIdx * offset, nIdx * offset + this.nDims));
-            cachePos.set(nIdx, fitness);
+          if (score === undefined) {
+            score = this.f(swarm.subarray(nIdx * offset, nIdx * offset + this.nDims));
+            cachePos.set(nIdx, score);
           }
 
-          if (fitness > bestFitness) {
-            bestFitness = fitness;
-            fittestNeighIdx = nIdx;
+          if (score > bestScore) {
+            bestScore = score;
+            bestNeighIdx = nIdx;
           }
         }
-        this.emit('best', bestFitness);
+        this.emit('best', 
+          bestNeighIdx, 
+          bestScore, 
+          bestScore - scores[scores.length - 1], // improvement
+        );
+
+        // shift scores
         scores.set(scores.subarray(1));
-        scores[scores.length - 1] = bestFitness;
-        const weight = this.inertia === null ? (1 - (timeTaken / this.timeOutMS)) : this.inertia;
-        const offsetPosFittestNeigh = fittestNeighIdx * offset;
+        scores[scores.length - 1] = bestScore;
+
+        const offsetPosFittestNeigh = bestNeighIdx * offset;
         for (let dim = 0; dim < this.nDims; dim++) {
-          const particlePos = pop[offsetPos + dim];
-          // decrease inertia linearly with time
-          pop[offsetVel + dim] = Math.max(
+          const particlePos = swarm[offsetPos + dim];
+          swarm[offsetVel + dim] = Math.max(
             this.minVel,
             Math.min(
               this.maxVel,
-              weight * pop[offsetVel + dim] + Math.random() * (pop[offsetBest + dim] - particlePos) + Math.random() * (pop[offsetPosFittestNeigh + dim] - particlePos),
+              weight * swarm[offsetVel + dim] + Math.random() * (swarm[offsetBest + dim] - particlePos) + Math.random() * (swarm[offsetPosFittestNeigh + dim] - particlePos),
             ),
           );
         }
         cachePos.delete(pIdx);
         for (let dim = 0; dim < this.nDims; dim++) {
-          pop[offsetPos + dim] = Math.min(this.maxPos, Math.max(this.minPos, pop[offsetPos + dim] + pop[offsetVel + dim]));
+          swarm[offsetPos + dim] = Math.min(this.maxPos, Math.max(this.minPos, swarm[offsetPos + dim] + swarm[offsetVel + dim]));
         }
       }
     }
@@ -167,7 +197,8 @@ class PSO extends EventEmitter {
     this.emit('end', rIdx, new Date(), timeTaken);
 
     for (let pIdx = 0; pIdx < this.nParts; pIdx++) {
-      yield pop.subarray(pIdx * offset + this.nDims, pIdx * offset + this.nDims + this.nDims);
+      // yield best known
+      yield swarm.subarray(pIdx * offset + this.nDims, pIdx * offset + this.nDims + this.nDims);
     }
   }
 }

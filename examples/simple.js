@@ -7,12 +7,9 @@ const SEC = 1000;
 const f = xs => xs.reduce((x1, x2) => x1 + x2, 0);
 const nDims = 1500;
 const opts = {
-  maxPos: 1E10,
   minImp: 0.01,
-  minPos: -1E10,
-  nNeigh: 0.15,
-  nParts: 50,
-  nTrack: 50,
+  nNeigh: 3,
+  nParts: 100,
   timeOutMS: 30 * SEC,
 };
 
@@ -22,8 +19,9 @@ pso.on('start', (_, opts) => console.log(opts));
 pso.on('rounds', () => console.log('[END] rounds'));
 pso.on('stuck', () => console.log('[END] stuck'));
 pso.on('timeout', () => console.log('[END] timeout'));
+pso.on('inertia', w => console.log('inertia', w.toFixed(4)));
 pso.on('end', (rIdx, ms) => console.log(`[DONE] rounds ${rIdx}, took ${ms / SEC}sec`));
-pso.on('best', fitness => console.log(fitness, fitness / (opts.maxPos * nDims)));
+pso.on('best', (_bestPartIdx, fitness) => console.log((fitness / (pso.maxPos * nDims)).toFixed(4)));
 pso.on('round', rIdx => console.log(`round #${rIdx}`));
 
 Array.from(pso.search());

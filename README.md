@@ -1,15 +1,16 @@
-# Particle Swarm Optimization
+# Particle Swarm Optimization (ALPHA)
 
 - use when search space is too large to use brute-force
   - e.g. solving equations or automating the process of design (or other
     optimization problems)
   - many problems can be reformulated as looking for a solution in an n-dimensional search space
+  - PSO is used for problems where data is continuous (i.e. real numbers)
 - each particle is a `Float64Array` representing a solution to the problem you are trying to solve
 - adaptive inertia
 - tweakable neighborhood
 - detects when the algorithm is stuck in a local minimum and returns
 - allows for profiling and debugging (see EventEmitter API)
-- tries to be efficient
+- efficient
 
 For dealing with combinatorial problems (values are discrete i.e. integers) see
 my [genetic algorithm](https://www.npmjs.com/package/genetic-algo) that follows
@@ -28,7 +29,7 @@ $ npm install particle-swarm-optimization
 In a nutshell:
 
 1. Provide `nDims` (**Int** &gt; 0)
-2. Provide a score function that accepts a candidate (`Float64Array`) and
+2. Provide a score function that accepts a particle (`Float64Array`) and
    returns a number. Each particle is of length `nDims`. The particles that
    score the highest will *attract* other particles.
 3. [EXTRA] You probably want a decode function as well (see **TIPS** section below).
@@ -43,7 +44,7 @@ const scoreFunct = arr => arr.reduce((x, y) => x + y, 0)
 const pso = new PSO(scoreFunct, 1000)
 
 // Array<Float64Array>
-const solutions = Array.from(pso.search()) // this is a GENERATOR
+const solutions = Array.from(pso.search() /* generator */)
 ```
 
 E.g. an initial population with `nParts = 5` and `nDims = 2` might look something like this:
@@ -104,14 +105,14 @@ const opts = {
 
 ## Tips
 
-It makes sense to have a `decode(cand)` function (see [examples](https://github.com/nl253/GeneticAlgo-JS/tree/master/examples)).  E.g.:
+It makes sense to have a `decode(particle)` function (see [examples](https://github.com/nl253/GeneticAlgo-JS/tree/master/examples)).  E.g.:
 
 ```js
-function decode(cand) {
+function decode(particle) {
   return {
-    price: cand[0],
-    category: Math.floor(cand[1]),
-    area: Math.floor(cand[2]),
+    price: particle[0],
+    category: Math.floor(particle[1]),
+    area: Math.floor(particle[2]),
     // etc.
   }
 }
@@ -120,8 +121,8 @@ function decode(cand) {
 And then it's *much* easier in the scoring function:
 
 ```js
-function scoreFunct(cand) {
-  const { price, category, area, ... } = decode(cand)
+function scoreFunct(particle) {
+  const { price, category, area, ... } = decode(particle)
   let score = 0
   score += 1000 - price
   score += getQualOfCat(category)
@@ -138,23 +139,33 @@ which can be used for profiling.
 
 **NOTE** data emitted is in sub-bullets.
 
-- `"start"` when `.search()` is called
+**Emitted Once** <br>
+
+1. `"init"` right after `.search()` is called, *before* initialisation
+2. `"generate"` when generating initial swarm.
+3. `"randomize"` when setting random values for dimensions in the initial swarm.
+4. `"start"` after `.search()` and all initialisation is complete, before the 1st round
   - **Int** `startTime` in milliseconds
-  - **Object** `opts`
-- `"timeout"` when `timeOutMS` limit reached.
-- `"rounds"` when `nRounds` limit reached.
-- `"stuck"` when stuck in a local minimum.
-- `"end"` when finished.
+  - **Object** `opts` the algorithm is run with (you can use it to see if you configured it properly)
+
+**Emitted on Stop Condition Met** <br>
+
+1. `"rounds"` when `nRounds` limit reached.
+2. `"timeout"` when `timeOutMS` limit is reached.
+3. `"stuck"` when stuck in a local minimum.
+4. `"end"` when finished.
   - **Int** `roundNumber`
   - **Date** `dateFinished`
-  - **Int** `msTook`
-- `"round"` on every round start (**not** the same as `"rounds"`).
-- `"best"` after all candidates have been evaluated and the best candidate is selected.
-  - **TypedArray** `bestCandidate`
-  - **Float** `scoreOfBestCandidate`
+  - **Int** `msTaken`
+
+**Emitted Every Round** <br>
+
+1. `"round"` on every round start (**not** the same as `"rounds"`).
+2. `"best"` after all particles have been evaluated and the best candidate is selected.
+  - **Float** `scoreOfBestParticle`
   - **Float** `improvementSinceLastRound`
-- `"generate"` when generating initial population.
-- `"randomize"` when setting random genes in the initial population.
+3. `"inertia"` after inertia has been computed (this makes sense when `inertia = null` which makes it adaptive, you can use it to see how it grows with time)
+  - **Float** `inertia`
 
 Example of extracting data from signals:
 
