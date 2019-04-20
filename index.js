@@ -67,6 +67,7 @@ class PSO extends EventEmitter {
 
     this.emit('start', startTm, {
       inertia: this.inertia,
+      nNeighs: this.nNeighs,
       maxVel: this.maxVel,
       nDims: this.nDims,
       nParts: this.nParts,

@@ -7,9 +7,9 @@ const SEC = 1000;
 const f = xs => xs.reduce((x1, x2) => x1 + x2, 0);
 const nDims = 1500;
 const opts = {
-  minImp: 0.01,
-  nNeigh: 3,
-  nParts: 100,
+  minImp: 0.1,
+  nNeighs: 6,
+  nParts: 30,
   timeOutMS: 30 * SEC,
 };
 
