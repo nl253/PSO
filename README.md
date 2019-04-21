@@ -73,18 +73,18 @@ const score = xs => {
 };
 ```
 
-Fittest candidates score 0 (distance from the root is 0 meaning root has been found), least fit candidates have a negative value.
+Best particles score 0 (distance from the root is 0 meaning root has been found), least fit particles have a negative value.
 
 ### [OPTIONAL] Decode Function
 
-It sometimes makes sense to have a `decode(cand)` function.
+It sometimes makes sense to have a `decode(particle)` function.
 
 ```js
-function decode(cand) {
+function decode(particle) {
   return {
-    price: cand[0],
-    category: Math.floor(cand[1]),
-    area: Math.floor(cand[2]),
+    price: particle[0],
+    category: Math.floor(particle[1]),
+    area: Math.floor(particle[2]),
     // etc.
   }
 }
@@ -93,8 +93,8 @@ function decode(cand) {
 And then it's *much* easier in the score function:
 
 ```js
-function scoreFunct(cand) {
-  const { price, category, area, ... } = decode(cand)
+function scoreFunct(particle) {
+  const { price, category, area, ... } = decode(particle)
   let fitnessScore = 0
   fitnessScore += 1000 - price
   fitnessScore += getQualOfCat(category)
@@ -174,16 +174,15 @@ Without such heuristics some problems cannot be solved at all. These would NP co
 
 ### Particle
 
-Each particle represents a **complete solution to the problem** you are trying to solve. 
+Each particle represents a **complete solution to the problem** you are trying to solve.
 The algorithm keeps track of a population (swarm) of those particles.
-Particles are modified in such a way that the population approaches a solution. 
-In this implementation particles are typed arrays. 
-Each candidate solution (particle) corresponds to a point in the search space that you are exploring. 
+Particles are modified in such a way that the population approaches a solution.
+In this implementation particles are typed arrays.
+Each candidate solution (particle) corresponds to a point in the search space that you are exploring.
 
 ### Score Function
 
-Measures the value of a candidate solution. The algorithm will perform well *if* your scoring function is good.
-
+Measures the value of a particle (candidate solution). The algorithm will perform well *if* your scoring function is good.
 
 ### Swarm
 
