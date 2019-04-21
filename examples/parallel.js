@@ -34,7 +34,7 @@ const pso = new PSO(f, nDims, opts);
 pso.on('start', (time, opts) => console.log(`[START] at ${new Date(time).toTimeString()} with opts`, opts));
 pso.on('stuck', () => console.log(`[END] stuck`));
 pso.on('timeout', () => console.log(`[END] timeout`));
-pso.on('end', (nr, d, ms) => console.log(`[END] after round #${nr} (took ${ms / SEC}sec)`));
+pso.on('end', (nr, ms) => console.log(`[END] after round #${nr} (took ${ms / SEC}sec)`));
 
 /* pso.search() will create a generator that iterates over the best population
  * if you want the best solution, just request the very first: */

@@ -43,7 +43,7 @@ function paramSetterScoreFunct(particle) {
   maximizer.on('start', (time, opts) => console.log('sub-algorithm [START] with opts', opts));
   maximizer.on('stuck', () => console.log('sub-algorithm [END] stuck'));
   maximizer.on('timeout', () => console.log('sub-algorithm [END] timeout'));
-  maximizer.on('end', (nr, d, ms) => console.log(`sub-algorithm [END] after round #${nr} (took ${ms / SEC}sec)`));
+  maximizer.on('end', (nr, ms) => console.log(`sub-algorithm [END] after round #${nr} (took ${ms / SEC}sec)`));
   const startTm = Date.now();
   const bestParticle = maximizer.search().next().value;
   const msTook = Date.now() - startTm;
@@ -66,10 +66,10 @@ const paramSetter = new PSO(paramSetterScoreFunct, paramSetterNDims, paramSetter
 
 // use the EventEmitter API for getting profiling
 paramSetter.on('start', time => console.log(`[START] at ${new Date(time).toTimeString()}`));
-paramSetter.on('best', (_, score) => console.log(score));
+paramSetter.on('best', score => console.log(score));
 paramSetter.on('stuck', () => console.log('[END] stuck'));
 paramSetter.on('timeout', () => console.log('[END] timeout'));
-paramSetter.on('end', (nr, d, ms) => console.log(`[END] after round #${nr} (took ${ms / SEC}sec)`));
+paramSetter.on('end', (nr, ms) => console.log(`[END] after round #${nr} (took ${ms / SEC}sec)`));
 
 const bestConfigs = paramSetter.search();
 
