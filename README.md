@@ -74,7 +74,25 @@ const score = xs => {
 }
 ```
 
-Best particles score 0 (distance from the root is 0 meaning root has been found), least fit particles have a negative value.
+Best particles score 0 (distance from the root is 0 meaning root has been
+found), worst particles have a negative value.
+
+Output from running this scoring function in [this](https://github.com/nl253/PSO-JS/tree/master/examples/math.js) example
+
+```
+(0 + 381135442.84136254^0) / 1000000000 = -1e-18
+(0 + 653773523.3628045^0) / 1000000000 = -1e-18
+(0 + 553500661.9872961^0) / 1000000000 = -1e-18
+(0 + 1000000000^0) / 1000000000 = -1e-18
+(0 + 1000000000^0) / 1000000000 = -1e-18
+(0 + 1000000000^0) / 1000000000 = -1e-18
+(0 + 0^0) / 1000000000 = -1e-18
+(0 + 133269167.98425382^0) / 1000000000 = -1e-18
+(0 + 198792532.17259422^0) / 1000000000 = -1e-18
+(0 + 307306178.6563051^0) / 1000000000 = -1e-18
+(0 + 490196345.0064646^0) / 1000000000 = -1e-18
+...  ...  ...  ...  ...  ...  ...  ...  ...  ...  
+```
 
 ### [OPTIONAL] Decode Function
 
@@ -108,8 +126,7 @@ function scoreFunct(particle) {
 ## Default `opts`
 
 In addition to required parameters (`scoreFunct`, `nDims`), you can also supply an object with configuration.
-I encourage to begin with defaults and then tweak if necessary.
-Here are the defaults:
+I encourage to begin with defaults and then tweak if necessary.  Here are the defaults:
 
 ```js
 const SEC = 1000;
@@ -179,15 +196,18 @@ solution is not needed. By sacrificing a bit of quality you drastically
 reduce the time needed to find a solution. Without such heuristics some
 problems cannot be solved at all. These would NP complete problems to
 which we do not have an algorithm which would run in polynomial time.
+Solutions are as good as your scoring function.
 
 ### Particle
 
 Each particle represents a **complete solution to the problem** you are
 trying to solve. The algorithm keeps track of a population (swarm) of
-those particles. Particles are modified in such a way that the
-population approaches a solution. In this implementation particles are
-typed arrays. Each candidate solution **(particle) corresponds to a
-point in the search space that you are exploring**.
+those particles. **Particles are moved across the search space** (modified) in such a way that the
+swarm approaches a solution. In this implementation particles are
+typed arrays. Each candidate solution (particle) corresponds to a
+point in the search space that you are exploring. **Particles are attracted
+to neighbors that score high on the fitness function AND to their previous best
+position in the search space**.
 
 ### Score Function
 
@@ -260,7 +280,7 @@ More examples [here](https://github.com/nl253/PSO-JS/tree/master/examples).
 
 - single-threaded (but see [parallel example](https://github.com/nl253/PSO-JS/blob/master/examples/parallel.js)
   that uses the cluster module from node stdlib).
-- this is a node.js library so it won&rsquo;t work in a browser
+- this is a node.js library so it won't work in a browser
 
 ## License
 

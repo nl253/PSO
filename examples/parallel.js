@@ -30,7 +30,7 @@ const opts = {
 
 const pso = new PSO(f, nDims, opts);
 
-// use the EventEmitter API for profiling
+// [optional] use the EventEmitter API for profiling
 pso.on('start', (time, opts) => console.log(`[START] at ${new Date(time).toTimeString()} with opts`, opts));
 pso.on('stuck', () => console.log(`[END] stuck`));
 pso.on('timeout', () => console.log(`[END] timeout`));
