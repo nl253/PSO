@@ -183,8 +183,7 @@ Each particle represents a **complete solution to the problem** you are
 trying to solve. The algorithm keeps track of a population (swarm) of
 those particles. Particles are modified in such a way that the
 population approaches a solution. In this implementation particles are
-typed arrays. Each candidate solution (particle) corresponds to a point
-in the search space that you are exploring.
+typed arrays. Each candidate solution **(particle) corresponds to a point in the search space that you are exploring**.
 
 ### Score Function
 
