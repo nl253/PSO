@@ -1,16 +1,16 @@
 # Particle Swarm Optimization (ALPHA)
 
 - use when search space is too large to use brute-force
-  - e.g. solving equations or automating the process of design (or other
-    optimization problems)
-  - many problems can be reformulated as looking for a solution in an n-dimensional search space
-  - PSO is used for problems where data is continuous (i.e. real numbers)
+  - e.g. solving equations or automating the process of design or other
+    **optimization problems**
+  - many **problems can be reformulated as exploring an n-dimensional search space**
+  - PSO is used for problems where data is **continuous** (i.e. real numbers)
 - each particle is a `Float64Array` representing a solution to the problem you are trying to solve
-- adaptive inertia
-- tweakable neighborhood
+- **adaptive inertia**
+- tweakable **neighborhood**
 - detects when the algorithm is stuck in a local minimum and returns
-- allows for profiling and debugging (see EventEmitter API)
-- efficient
+- allows for profiling and debugging (see **EventEmitter API**)
+- **efficient** (built on typed arrays)
 
 For dealing with combinatorial problems (values are discrete i.e. integers) see
 my [genetic algorithm](https://www.npmjs.com/package/genetic-algo) that follows
@@ -26,6 +26,21 @@ $ npm install particle-swarm-optimization
 
 ## API
 
+Example:
+
+```js
+const PSO = require('particle-swarm-optimization')
+
+// silly score function, maximises values on all dimensions (see below for a better example)
+const scoreFunct = arr => arr.reduce((x, y) => x + y, 0) 
+
+// you may also supply an object with options  see below DEFAULT OPTS)
+const pso = new PSO(scoreFunct, 1000 /* nDims */)
+
+// Array<Float64Array>
+const solutions = Array.from(pso.search() /* generator */)
+```
+
 In a nutshell:
 
 1. Provide `nDims` (**Int** &gt; 0)
@@ -34,50 +49,85 @@ In a nutshell:
    score the highest will *attract* other particles.
 3. [EXTRA] You probably want a decode function as well (see **TIPS** section below).
 
+## Score Function
+
+### Signature
+
+`function(TypedArray): Number` <br>
+
+The number it returns may be positive or negative. It may be an integer or a real number.
+
+### Example
+
+The previous example maximised the value of every gene. This example computes the negative of the distance from roots of an equation:
+
 ```js
-const PSO = require('particle-swarm-optimization')
-
-// silly score function, maximises values on all dimensions (see below for a better example)
-const scoreFunct = arr => arr.reduce((x, y) => x + y, 0) 
-
-// new PSO(scoreFunct, nDims, [OPTIONAL] opts - see below) 
-const pso = new PSO(scoreFunct, 1000)
-
-// Array<Float64Array>
-const solutions = Array.from(pso.search() /* generator */)
+const expr = (x1, x2, x3, x4, x5, x6) => (Math.log2(x1) * x2 ** x3 / x4) + x5 ** (Math.log2(x6));
+const score = xs => {
+  const val = -(Math.abs(expr(...xs)));
+  if (Object.is(NaN, val) || Object.is(Infinity, val)) {
+    return -Infinity;
+  } else {
+    return val;
+  }
+};
 ```
 
-E.g. an initial population with `nParts = 5` and `nDims = 2` might look something like this:
+Fittest candidates score 0 (distance from the root is 0 meaning root has been found), least fit candidates have a negative value.
+
+### [OPTIONAL] Decode Function
+
+It sometimes makes sense to have a `decode(cand)` function.
 
 ```js
-// dim1     dim2 
-[23.123,  312.3] // particle 1
-[  -1.3,   41.4] // particle 2
-[  10.0,   11.1] // particle 3
-[-1.999,  100.0] // particle 4
-[ 99912, 222.31] // particle 5
+function decode(cand) {
+  return {
+    price: cand[0],
+    category: Math.floor(cand[1]),
+    area: Math.floor(cand[2]),
+    // etc.
+  }
+}
+```
+
+And then it's *much* easier in the score function:
+
+```js
+function scoreFunct(cand) {
+  const { price, category, area, ... } = decode(cand)
+  let fitnessScore = 0
+  fitnessScore += 1000 - price
+  fitnessScore += getQualOfCat(category)
+  fitnessScore -= getCostOfArea(area)
+  // other vars ...
+  return fitnessScore
+}
 ```
 
 ## Default `opts`
 
-I encourage to begin with defaults.
+In addition to required parameters (`scoreFunct`, `nDims`), you can also supply an object with configuration.
+I encourage to begin with defaults and then tweak if necessary.
+Here are the defaults:
 
 ```js
 const SEC = 1000;
 
 const opts = {
-  // used to reduce the velocity 
-  // if null (default) it will start as 1 and decrease with time (I encourage to leave it unchanged)
-  // if you do want to change it, it must be a value between 0 and 1
-  inertia: null,
 
   // stop condition 
+  // (if you find that the algorithm gets stuck too quickly, increase it)
   timeOutMS: 30 * SEC, 
 
   // stop condition
   nRounds: 1E6,      
 
-  // it makes sense for it to be 30 - 200 ish
+  // used to reduce the velocity 
+  // if null (default) it will start as 1 and decrease with time (I encourage to leave it unchanged)
+  // if you do want to change it, it must be a value between 0 and 1
+  inertia: null,
+
+  // it makes sense for it to be 30 - 100 ish
   // (if you find that the algorithm gets stuck too quickly, increase it)
   nParts: 300,        
 
@@ -103,33 +153,49 @@ const opts = {
 }
 ```
 
-## Tips
-
-It makes sense to have a `decode(particle)` function (see [examples](https://github.com/nl253/PSO-JS/tree/master/examples)).  E.g.:
+E.g.:
 
 ```js
-function decode(particle) {
-  return {
-    price: particle[0],
-    category: Math.floor(particle[1]),
-    area: Math.floor(particle[2]),
-    // etc.
-  }
-}
+const opts = { 
+  timeOutMS: 30 * SEC, 
+  nParts: 40,
+  nNeighs: 10,         
+};
+const nDims = 1000;
+
+const pso = new PSO(someScoreFunct, nDims, opts)
 ```
 
-And then it's *much* easier in the scoring function:
+## Theory Behind Particle Swarm Optimization
+
+This algorithm uses a nature-inspired **heuristic** and has the potential to achieve excellent results but it *might not* find the optimal (ideal) solution.
+That said, for many applications the best solution is not needed. By sacrificing a bit of quality you drastically reduce the time needed to find a solution. 
+Without such heuristics some problems cannot be solved at all. These would NP complete problems to which we do not have an algorithm which would run in polynomial time.
+
+### Particle
+
+Each particle represents a **complete solution to the problem** you are trying to solve. 
+The algorithm keeps track of a population (swarm) of those particles.
+Particles are modified in such a way that the population approaches a solution. 
+In this implementation particles are typed arrays. 
+Each candidate solution (particle) corresponds to a point in the search space that you are exploring. 
+
+### Score Function
+
+Measures the value of a candidate solution. The algorithm will perform well *if* your scoring function is good.
+
+
+### Swarm
+
+Swarm is a collection of particles (population of candidate solutions).  E.g. an initial population with `nParts = 5` and `nDims = 2` might look something like this:
 
 ```js
-function scoreFunct(particle) {
-  const { price, category, area, ... } = decode(particle)
-  let score = 0
-  score += 1000 - price
-  score += getQualOfCat(category)
-  score -= getCostOfArea(area)
-  // other vars ...
-  return score
-}
+// dim1     dim2 
+[23.123,  312.3] // particle 1
+[  -1.3,   41.4] // particle 2
+[  10.0,   11.1] // particle 3
+[-1.999,  100.0] // particle 4
+[ 99912, 222.31] // particle 5
 ```
 
 ## Profiling with EventEmitter API
@@ -177,7 +243,7 @@ pso.on('timeout', () => console.log(`[END] timeout`));
 pso.on('end', (rIdx, ms) => console.log(`[END] after round #${rIdx} (took ${ms / SEC}sec)`));
 ```
 
-To see more examples see [examples](https://github.com/nl253/PSO-JS/tree/master/examples).
+More examples [here](https://github.com/nl253/PSO-JS/tree/master/examples).
 
 ## Downsides
 
