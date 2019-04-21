@@ -5,7 +5,8 @@
     **optimization problems**
   - many **problems can be reformulated as exploring an n-dimensional search space**
   - PSO is used for problems where data is **continuous** (i.e. real numbers)
-- each particle is a `Float64Array` representing a solution to the problem you are trying to solve
+- each particle is a `Float64Array` representing a solution to the
+  problem you are trying to solve
 - **adaptive inertia**
 - tweakable **neighborhood**
 - detects when the algorithm is stuck in a local minimum and returns
@@ -43,11 +44,11 @@ const solutions = Array.from(pso.search() /* generator */)
 
 In a nutshell:
 
-1. Provide `nDims` (**Int** &gt; 0)
-2. Provide a score function that accepts a particle (`Float64Array`) and
-   returns a number. Each particle is of length `nDims`. The particles that
-   score the highest will *attract* other particles.
-3. [EXTRA] You probably want a decode function as well (see **TIPS** section below).
+1.  Provide `nDims` (**Int** &gt; 0)
+2.  Provide a score function that accepts a particle (`Float64Array`)
+    and returns a number. Each particle is of length `nDims`. The
+    particles that score the highest will *attract* other particles.
+3.  [EXTRA] You probably want a decode function as well (see **TIPS** section below).
 
 ## Score Function
 
@@ -153,7 +154,7 @@ const opts = {
 }
 ```
 
-E.g.:
+For example:
 
 ```js
 const opts = { 
@@ -168,25 +169,33 @@ const pso = new PSO(someScoreFunct, nDims, opts)
 
 ## Theory Behind Particle Swarm Optimization
 
-This algorithm uses a nature-inspired **heuristic** and has the potential to achieve excellent results but it *might not* find the optimal (ideal) solution.
-That said, for many applications the best solution is not needed. By sacrificing a bit of quality you drastically reduce the time needed to find a solution. 
-Without such heuristics some problems cannot be solved at all. These would NP complete problems to which we do not have an algorithm which would run in polynomial time.
+This algorithm uses a nature-inspired **heuristic** and has the
+potential to achieve excellent results but it *might not* find the
+optimal (ideal) solution. That said, for many applications the best
+solution is not needed. By sacrificing a bit of quality you drastically
+reduce the time needed to find a solution. Without such heuristics some
+problems cannot be solved at all. These would NP complete problems to
+which we do not have an algorithm which would run in polynomial time.
 
 ### Particle
 
-Each particle represents a **complete solution to the problem** you are trying to solve.
-The algorithm keeps track of a population (swarm) of those particles.
-Particles are modified in such a way that the population approaches a solution.
-In this implementation particles are typed arrays.
-Each candidate solution (particle) corresponds to a point in the search space that you are exploring.
+Each particle represents a **complete solution to the problem** you are
+trying to solve. The algorithm keeps track of a population (swarm) of
+those particles. Particles are modified in such a way that the
+population approaches a solution. In this implementation particles are
+typed arrays. Each candidate solution (particle) corresponds to a point
+in the search space that you are exploring.
 
 ### Score Function
 
-Measures the value of a particle (candidate solution). The algorithm will perform well *if* your scoring function is good.
+Measures the value of a particle (candidate solution). The algorithm
+will perform well *if* your scoring function is good.
 
 ### Swarm
 
-Swarm is a collection of particles (population of candidate solutions).  E.g. an initial population with `nParts = 5` and `nDims = 2` might look something like this:
+Swarm is a collection of particles (population of candidate solutions).
+An initial population with `nParts = 5` and `nDims = 2` might look
+something like this:
 
 ```js
 // dim1     dim2 
@@ -199,8 +208,8 @@ Swarm is a collection of particles (population of candidate solutions).  E.g. an
 
 ## Profiling with EventEmitter API
 
-The `PSO` object emits signals along with some information
-which can be used for profiling.
+The `PSO` object emits signals along with some information which can be
+used for profiling.
 
 **NOTE** data emitted is in sub-bullets.
 
@@ -246,8 +255,9 @@ More examples [here](https://github.com/nl253/PSO-JS/tree/master/examples).
 
 ## Downsides
 
-- single-threaded (but see [parallel example](https://github.com/nl253/PSO-JS/blob/master/examples/parallel.js) that uses the cluster module from node stdlib).
-- this is a node.js library so it won't work in a browser
+- single-threaded (but see [parallel example](https://github.com/nl253/PSO-JS/blob/master/examples/parallel.js)
+  that uses the cluster module from node stdlib).
+- this is a node.js library so it won&rsquo;t work in a browser
 
 ## License
 
