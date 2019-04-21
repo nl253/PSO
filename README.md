@@ -63,6 +63,7 @@ The number it returns may be positive or negative. It may be an integer or a rea
 The previous example maximised the value of every gene. This example computes the negative of the distance from roots of an equation:
 
 ```js
+// you want expr to evalute to 0
 const expr = (x1, x2, x3, x4, x5, x6) => (Math.log2(x1) * x2 ** x3 / x4) + x5 ** (Math.log2(x6))
 const score = xs => {
   const val = -(Math.abs(expr(...xs)));
