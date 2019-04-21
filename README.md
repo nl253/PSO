@@ -1,4 +1,4 @@
-# Particle Swarm Optimization (ALPHA)
+# Particle Swarm Optimization
 
 - use when search space is too large to use brute-force
   - e.g. solving equations or automating the process of design or other
@@ -67,11 +67,11 @@ const expr = (x1, x2, x3, x4, x5, x6) => (Math.log2(x1) * x2 ** x3 / x4) + x5 **
 const score = xs => {
   const val = -(Math.abs(expr(...xs)));
   if (Object.is(NaN, val) || Object.is(Infinity, val)) {
-    return -Infinity;
+    return -Infinity
   } else {
-    return val;
+    return val
   }
-};
+}
 ```
 
 Best particles score 0 (distance from the root is 0 meaning root has been found), least fit particles have a negative value.
@@ -164,8 +164,8 @@ const opts = {
   timeOutMS: 30 * SEC, 
   nParts: 40,
   nNeighs: 10,         
-};
-const nDims = 1000;
+}
+const nDims = 1000
 
 const pso = new PSO(someScoreFunct, nDims, opts)
 ```
@@ -247,11 +247,11 @@ used for profiling.
 Example of extracting data from signals:
 
 ```js
-pso.on('start', time => console.log(`[START] at ${new Date(time).toTimeString()}`));
-pso.on('best', score => console.log(score));
-pso.on('stuck', () => console.log(`[END] stuck`));
-pso.on('timeout', () => console.log(`[END] timeout`));
-pso.on('end', (rIdx, ms) => console.log(`[END] after round #${rIdx} (took ${ms / SEC}sec)`));
+pso.on('start', time => console.log(`[START] at ${new Date(time).toTimeString()}`))
+pso.on('best', score => console.log(score))
+pso.on('stuck', () => console.log(`[END] stuck`))
+pso.on('timeout', () => console.log(`[END] timeout`))
+pso.on('end', (rIdx, ms) => console.log(`[END] after round #${rIdx} (took ${ms / SEC}sec)`))
 ```
 
 More examples [here](https://github.com/nl253/PSO-JS/tree/master/examples).
