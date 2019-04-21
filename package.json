@@ -1,32 +1,10 @@
 {
   "author": "Norbert Logiewa <norbertlogiewa96@gmail.com>",
-  "description": "Particle Swarm Optimization algorithm",
-  "repository": {
-    "url": "https://github.com/nl253/PSO-JS",
-    "type": "git"
-  },
   "bugs": {
-    "url": "https://github.com/nl253/PSO-JS/issues",
-    "email": "norbertlogiewa96@gmail.com"
+    "email": "norbertlogiewa96@gmail.com",
+    "url": "https://github.com/nl253/PSO-JS/issues"
   },
-  "files": [
-    "examples/meta.js",
-    "examples/math.js",
-    "examples/simple.js",
-    "examples/parallel.js"
-  ],
-  "directories": {
-    "example": "examples"
-  },
-  "keywords": [
-    "PSO",
-    "pso",
-    "particle-swarm-optimization",
-    "particle-swarm-optimisation",
-    "global-search",
-    "algorithm",
-    "search-algorithm"
-  ],
+  "description": "Particle Swarm Optimization algorithm",
   "devDependencies": {
     "eslint": "^5.16.0",
     "eslint-config-airbnb": "^17.1.0",
@@ -40,10 +18,39 @@
     "eslint-plugin-react": "^7.12.4",
     "eslint-plugin-security": "^1.4.0"
   },
+  "directories": {
+    "example": "examples"
+  },
+  "engines": {
+    "node": ">=10"
+  },
+  "files": [
+    "README.md",
+    "index.js",
+    "examples/meta.js",
+    "examples/math.js",
+    "examples/simple.js",
+    "examples/parallel.js"
+  ],
+  "keywords": [
+    "PSO",
+    "algorithm",
+    "heuristic-search",
+    "natural-computation",
+    "particle-swarm-optimization",
+    "population-search",
+    "pso",
+    "search-algorithm",
+    "global-search"
+  ],
   "license": "MIT",
   "main": "index.js",
   "name": "particle-swarm-optimization",
   "private": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nl253/PSO-JS"
+  },
   "scripts": {
     "test": "jest"
   },
