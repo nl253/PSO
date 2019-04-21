@@ -77,7 +77,7 @@ const score = xs => {
 Best particles score 0 (distance from the root is 0 meaning root has been
 found), worst particles have a negative value.
 
-Output from running this scoring function in [this](https://github.com/nl253/PSO-JS/tree/master/examples/math.js) example
+Output from running this scoring function in [this](https://github.com/nl253/PSO-JS/tree/master/examples/math.js) example:
 
 ```
 (0 + 381135442.84136254^0) / 1000000000 = -1e-18
