@@ -124,7 +124,8 @@ const opts = {
   nRounds: 1E6,      
 
   // used to reduce the velocity 
-  // if null (default) it will start as 1 and decrease with time (I encourage to leave it unchanged)
+  // if null (default) it will start as 1 and decrease with time 
+  // I encourage to leave it unchanged,
   // if you do want to change it, it must be a value between 0 and 1
   inertia: null,
 
@@ -133,7 +134,8 @@ const opts = {
   nParts: 300,        
 
   // 0.2 is 20%, 10 is 10
-  // this is how many neighbors a particle will consider (every particle is attracted to the best neighbor)
+  // this is how many neighbors a particle will consider 
+  // every particle is attracted to the best neighbor)
   // (if you find that the algorithm gets stuck too quickly, decrease it)
   nNeighs: 0.1,         
 
@@ -141,7 +143,8 @@ const opts = {
   // (if you find that the algorithm gets stuck too quickly, increase it)
   nTrack: 200,          
 
-  // this is used to detect being stuck local minima (no improvement), you should not need to change it
+  // this is used to detect being stuck local minima (no improvement), 
+  // you should not need to change it
   minImprove: 1E-6,    
 
   // this limits the search space for all dimensions
@@ -183,7 +186,8 @@ Each particle represents a **complete solution to the problem** you are
 trying to solve. The algorithm keeps track of a population (swarm) of
 those particles. Particles are modified in such a way that the
 population approaches a solution. In this implementation particles are
-typed arrays. Each candidate solution **(particle) corresponds to a point in the search space that you are exploring**.
+typed arrays. Each candidate solution **(particle) corresponds to a
+point in the search space that you are exploring**.
 
 ### Score Function
 
