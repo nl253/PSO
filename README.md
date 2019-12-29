@@ -78,7 +78,7 @@ const score = xs => {
 Best particles score 0 (distance from the root is 0 meaning root has been
 found), worst particles have a negative value.
 
-Output from running this scoring function in [this](https://github.com/nl253/PSO-JS/tree/master/examples/math.js) example:
+Output from running this scoring function in [this](https://github.com/nl253/PSO/tree/master/examples/math.js) example:
 
 ```
 (0 + 381135442.84136254^0) / 1000000000 = -1e-18
@@ -275,11 +275,11 @@ pso.on('timeout', () => console.log(`[END] timeout`))
 pso.on('end', (rIdx, ms) => console.log(`[END] after round #${rIdx} (took ${ms / SEC}sec)`))
 ```
 
-More examples [here](https://github.com/nl253/PSO-JS/tree/master/examples).
+More examples [here](https://github.com/nl253/PSO/tree/master/examples).
 
 ## Downsides
 
-- single-threaded (but see [parallel example](https://github.com/nl253/PSO-JS/blob/master/examples/parallel.js)
+- single-threaded (but see [parallel example](https://github.com/nl253/PSO/blob/master/examples/parallel.js)
   that uses the cluster module from node stdlib).
 - this is a node.js library so it won't work in a browser
 

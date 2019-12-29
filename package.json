@@ -2,7 +2,7 @@
   "author": "Norbert Logiewa <norbertlogiewa96@gmail.com>",
   "bugs": {
     "email": "norbertlogiewa96@gmail.com",
-    "url": "https://github.com/nl253/PSO-JS/issues"
+    "url": "https://github.com/nl253/PSO/issues"
   },
   "description": "Particle Swarm Optimization algorithm",
   "devDependencies": {
@@ -49,7 +49,7 @@
   "private": false,
   "repository": {
     "type": "git",
-    "url": "https://github.com/nl253/PSO-JS"
+    "url": "https://github.com/nl253/PSO"
   },
   "scripts": {
     "test": "jest"
