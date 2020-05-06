@@ -52,7 +52,13 @@
     "url": "https://github.com/nl253/PSO"
   },
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
-  "version": "1.0.1"
+  "version": "1.0.1",
+  "snyk": true,
+  "dependencies": {
+    "snyk": "^1.319.1"
+  }
 }
